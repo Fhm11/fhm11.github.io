@@ -1,5 +1,3 @@
-
-
 const ADMIN_IP = '91.168.121.246'; 
 const STORAGE_KEY = 'Fahim:v2';
 
@@ -38,15 +36,28 @@ let state = {
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) state = JSON.parse(raw);
-  }catch(e){ console.warn('Load failed', e); }
+    if(raw) {
+      const loaded = JSON.parse(raw);
+      state = {
+        name: loaded.name || 'Fahim',
+        bio: loaded.bio || 'Ta bio courte...',
+        avatar: loaded.avatar || '',
+        links: loaded.links || []
+      };
+    }
+    renderAll();
+  }catch(e){ 
+    console.warn('Load failed', e); 
+  }
 }
 
 function saveState(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     renderAll();
-  }catch(e){ console.warn('Save failed', e); }
+  }catch(e){ 
+    console.warn('Save failed', e); 
+  }
 }
 function renderPublic(){
   if(!publicName) return;
