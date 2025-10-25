@@ -1,7 +1,7 @@
 
 
 const ADMIN_IP = '91.168.121.246'; 
-const STORAGE_KEY = 'linkhub:v2';
+const STORAGE_KEY = 'Fahim:v2';
 
 const page = document.body.dataset.page || 'public';
 const isAdminPage = page === 'admin';
@@ -141,7 +141,7 @@ function exportJSON(){
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'linkhub-export.json';
+  a.href = url; a.download = 'Fahim-export.json';
   a.click(); URL.revokeObjectURL(url);
 }
 
