@@ -34,21 +34,25 @@ let state = {
 };
 
 // Charge les données depuis le navigateur sans jamais réinitialiser inutilement
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){
-      const loaded = JSON.parse(raw);
-      if(loaded && typeof loaded === 'object'){
-        state.name = loaded.name || state.name;
-        state.bio = loaded.bio || state.bio;
-        state.avatar = loaded.avatar || state.avatar;
-        state.links = Array.isArray(loaded.links) ? loaded.links : state.links;
-      }
+async function loadState() {
+  try {
+    // Essaie d'abord de charger depuis localStorage
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      state = JSON.parse(stored);
+      renderAll();
+      return;
     }
-    renderAll();
-  }catch(e){ 
-    console.warn('Load failed', e); 
+
+    // Sinon charge depuis data.json
+    const response = await fetch('data.json');
+    if (response.ok) {
+      state = await response.json();
+      saveState(); // Sauvegarde en localStorage pour la prochaine fois
+      renderAll();
+    }
+  } catch(e) {
+    console.warn('Load failed', e);
   }
 }
 
@@ -216,8 +220,10 @@ if(isAdminPage){
 }
 
 // Charge et affiche tout
-loadState();
-renderAll();
+(async () => {
+  await loadState();
+  renderAll();
+})();
 
 // Vérification IP pour admin
 if(isAdminPage){
