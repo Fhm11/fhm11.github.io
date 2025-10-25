@@ -25,25 +25,26 @@ const importBtn = document.getElementById('importBtn');
 const resetBtn = document.getElementById('resetBtn');
 const previewBox = document.getElementById('previewBox');
 
+// Valeurs par défaut
 let state = {
   name: 'Ton Nom',
   bio: 'Ta bio courte...',
   avatar: '',
-  links: [
-  ]
+  links: []
 };
 
+// Charge les données depuis le navigateur sans jamais réinitialiser inutilement
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) {
+    if(raw){
       const loaded = JSON.parse(raw);
-      state = {
-        name: loaded.name || 'Fahim',
-        bio: loaded.bio || 'Ta bio courte...',
-        avatar: loaded.avatar || '',
-        links: loaded.links || []
-      };
+      if(loaded && typeof loaded === 'object'){
+        state.name = loaded.name || state.name;
+        state.bio = loaded.bio || state.bio;
+        state.avatar = loaded.avatar || state.avatar;
+        state.links = Array.isArray(loaded.links) ? loaded.links : state.links;
+      }
     }
     renderAll();
   }catch(e){ 
@@ -51,6 +52,7 @@ function loadState(){
   }
 }
 
+// Sauvegarde les données dans le navigateur
 function saveState(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -59,19 +61,17 @@ function saveState(){
     console.warn('Save failed', e); 
   }
 }
+
+// Fonction pour la page publique
 function renderPublic(){
   if(!publicName) return;
   publicName.textContent = state.name || '—';
   publicBio.textContent = state.bio || '';
-  if(state.avatar){
-    avatarPublic.style.backgroundImage = `url(${state.avatar})`;
-    avatarPublic.style.backgroundSize = 'cover';
-  }else{
-    avatarPublic.style.backgroundImage = '';
-  }
+  avatarPublic.style.backgroundImage = state.avatar ? `url(${state.avatar})` : '';
+  avatarPublic.style.backgroundSize = 'cover';
 
   publicLinks.innerHTML = '';
-  state.links.forEach((l, idx)=>{
+  state.links.forEach(l => {
     const el = document.createElement('a');
     el.className = 'link-card';
     el.href = l.url;
@@ -89,11 +89,13 @@ function renderPublic(){
   });
 }
 
+// Fonction pour la page admin
 function renderAdmin(){
   if(!isAdminPage || !adminUI) return;
-  adminName.value = state.name || '';
-  adminBio.value = state.bio || '';
-  adminAvatar.value = state.avatar || '';
+  adminName.value = state.name;
+  adminBio.value = state.bio;
+  adminAvatar.value = state.avatar;
+
   editorList.innerHTML = '';
   state.links.forEach((l, i)=>{
     const row = document.createElement('div');
@@ -116,11 +118,12 @@ function renderAdmin(){
 
     editorList.appendChild(row);
   });
+
   if(previewBox){
     previewBox.innerHTML = `
       <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <div style="width:48px;height:48px;border-radius:10px;background:${state.avatar?`url(${state.avatar}) center/cover`:`linear-gradient(90deg, ${getAccent()}, ${getAccentB()})` }"></div>
+          <div style="width:48px;height:48px;border-radius:10px;background:${state.avatar?`url(${state.avatar}) center/cover`:`linear-gradient(90deg, ${getAccent()}, ${getAccentB()})`}"></div>
           <div>
             <div style="font-weight:700">${escapeHtml(state.name)}</div>
             <div class="muted small">${escapeHtml(state.bio)}</div>
@@ -134,11 +137,12 @@ function renderAdmin(){
   }
 }
 
+// Fonctions utilitaires
 function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 function getAccent(){ return '#7c3aed'; }
 function getAccentB(){ return '#06b6d4'; }
 
-
+// Ajouter un lien
 function addLink(){
   const t = (newTitle && newTitle.value || '').trim();
   const u = (newUrl && newUrl.value || '').trim();
@@ -148,6 +152,7 @@ function addLink(){
   saveState();
 }
 
+// Export / import JSON
 function exportJSON(){
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -179,7 +184,7 @@ function importJSON(){
   input.click();
 }
 
-
+// Réinitialiser toutes les données
 function resetAll(){
   if(!confirm('Supprimer toutes les données locales ?')) return;
   localStorage.removeItem(STORAGE_KEY);
@@ -187,18 +192,18 @@ function resetAll(){
   saveState();
 }
 
-function openUrl(u){
-  if(!u) return;
-  if(u.startsWith('mailto:')) location.href = u;
-  else window.open(u,'_blank','noopener');
-}
-
+// Partage
 if(sharePublic) sharePublic.addEventListener('click', async ()=>{
   const url = location.href;
-  if(navigator.share){ try{ await navigator.share({ title: state.name || 'Ma page', text: state.bio||'', url }); }catch(e){} }
-  else { await navigator.clipboard.writeText(url); alert('URL copiée'); }
+  if(navigator.share){ 
+    try{ await navigator.share({ title: state.name || 'Ma page', text: state.bio||'', url }); }catch(e){}
+  } else { 
+    await navigator.clipboard.writeText(url); 
+    alert('URL copiée'); 
+  }
 });
 
+// Admin events
 if(isAdminPage){
   if(addBtn) addBtn.addEventListener('click', addLink);
   if(saveBtn) saveBtn.addEventListener('click', saveState);
@@ -210,9 +215,11 @@ if(isAdminPage){
   if(adminAvatar) adminAvatar.addEventListener('input', ()=> { state.avatar = adminAvatar.value; saveState(); });
 }
 
+// Charge et affiche tout
 loadState();
 renderAll();
 
+// Vérification IP pour admin
 if(isAdminPage){
   detectAdminIP().then(isAdmin=>{
     if(isAdmin){
