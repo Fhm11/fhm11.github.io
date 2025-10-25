@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LinkHub — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="admin">
+  <main class="page admin-page">
+    <section class="card glass admin-card" id="adminCard" aria-live="polite">
+      <h1>⚙️ Panneau Admin</h1>
+      <div id="adminLock" class="admin-lock muted">Vérification IP en cours…</div>
+
+      <div id="adminUI" hidden>
+        <div class="row">
+          <label>Nom
+            <input id="adminName" type="text" placeholder="Votre nom">
+          </label>
+          <label>Bio
+            <input id="adminBio" type="text" placeholder="Courte bio">
+          </label>
+        </div>
+
+        <label>Avatar (URL)
+          <input id="adminAvatar" type="url" placeholder="https://.../avatar.jpg">
+        </label>
+
+        <hr/>
+
+        <h3>Liens</h3>
+        <div class="editor-row">
+          <input id="newTitle" placeholder="Titre (ex: Portfolio)">
+          <input id="newUrl" placeholder="URL (https://...)">
+          <button id="addBtn" class="btn primary">➕</button>
+        </div>
+
+        <div id="editorList" class="editor-list"></div>
+
+        <div class="admin-actions">
+          <button id="saveBtn" class="btn primary">Enregistrer</button>
+          <button id="exportBtn" class="btn">Exporter JSON</button>
+          <button id="importBtn" class="btn">Importer JSON</button>
+          <button id="resetBtn" class="btn">Réinitialiser</button>
+        </div>
+
+        <p class="muted small">Accès admin restreint par IP (configuration côté client).</p>
+      </div>
+    </section>
+
+    <aside class="preview glass">
+      <h2>Aperçu public</h2>
+      <div class="preview-box" id="previewBox"></div>
+      <a href="index.html" class="btn">Voir la page publique</a>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

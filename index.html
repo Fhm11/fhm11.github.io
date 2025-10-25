@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LinkHub — Vos liens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="public">
+  <main class="page">
+    <section class="profile glass">
+      <div class="cover" aria-hidden="true"></div>
+      <div class="avatar" id="avatarPublic" role="img" aria-label="avatar"></div>
+      <h1 id="publicName">Nom</h1>
+      <p id="publicBio" class="muted">Bio</p>
+    </section>
+
+    <section class="links-wrap glass">
+      <div class="links-header">
+        <h2>Mes liens</h2>
+        <div class="actions">
+          <button id="sharePublic" class="btn">Partager</button>
+        </div>
+      </div>
+
+      <div id="publicLinks" class="links-list" aria-live="polite"></div>
+
+      <footer class="small muted">© LinkHub — Page publique</footer>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
